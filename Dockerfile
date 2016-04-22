@@ -29,7 +29,7 @@ RUN addgroup -S elasticsearch && adduser -s /bin/bash -D -G elasticsearch elasti
 	; do \
 		mkdir -p "$path"; \
 	done \
-    && chown -R elasticsearch:root /opt /scripts
+    && chown -R elasticsearch:elasticsearch /opt /scripts
 
 # Add files
 COPY config/elasticsearch.yml /opt/elasticsearch/config/elasticsearch.yml
