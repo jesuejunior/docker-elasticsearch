@@ -8,29 +8,44 @@ ENV ELASTICSEARCH_URL https://download.elastic.co/$PKG_NAME/$PKG_NAME/$PKG_NAME-
 
 # Download Elasticsearch
 
-ADD $ELASTICSEARCH_URL /tmp
+#ADD $ELASTICSEARCH_URL /tmp
 
-RUN apk update \
+COPY elasticsearch-2.3.1.tar.gz /tmp/
+
+RUN addgroup -S elasticsearch && adduser -s /bin/bash -D -G elasticsearch elasticsearch \
+    && apk update \
     && apk add openssl \
-    && mkdir -p /opt \  
-    && tar -xvzf /tmp/$PKG_NAME-$ELASTICSEARCH_VERSION.tar.gz -C /opt/ \
+    && mkdir -p /opt \
+    && tar xvzf /tmp/$PKG_NAME-$ELASTICSEARCH_VERSION.tar.gz -C /opt/ \
     && ln -s /opt/$PKG_NAME-$ELASTICSEARCH_VERSION /opt/$PKG_NAME \
-    && rm -rf /tmp/*.tar.gz /var/cache/apk/* \
-    && mkdir /var/lib/elasticsearch \
-    && chown nobody /var/lib/elasticsearch
+    && rm -rf /tmp/*.tar.gz /var/cache/apk/*
+#
+
+WORKDIR /opt/$PKG_NAME
+
+RUN set -ex \
+	&& for path in \
+		./data \
+		./data/elk \
+		./logs \
+		./config \
+		./config/scripts \
+	; do \
+		mkdir -p "$path"; \
+	done \
+    && chown -R elasticsearch:elasticsearch /opt/elasticsearch \
+    && chmod 775 -R /opt/elasticsearch
 
 # Add files
 COPY config/elasticsearch.yml /opt/elasticsearch/config/elasticsearch.yml
 COPY scripts/run.sh /scripts/run.sh
 
 # Specify Volume
-VOLUME ["/var/lib/elasticsearch"]
+VOLUME ["/opt/elasticsearch"]
 
 # Exposes
-EXPOSE 9200
-EXPOSE 9300
-
-USER nobody
+EXPOSE 9200 9300
+USER elasticsearch
 
 # CMD
 ENTRYPOINT ["/scripts/run.sh"]
