@@ -5,12 +5,11 @@ MAINTAINER Jesue Junior <jesuesousa@gmail.com>
 ENV PKG_NAME elasticsearch
 ENV ELASTICSEARCH_VERSION 2.3.1
 ENV ELASTICSEARCH_URL https://download.elastic.co/$PKG_NAME/$PKG_NAME/$PKG_NAME-$ELASTICSEARCH_VERSION.tar.gz
+ENV ES_PATH = /opt/$PKG_NAME
 
 # Download Elasticsearch
 
-#ADD $ELASTICSEARCH_URL /tmp
-
-COPY elasticsearch-2.3.1.tar.gz /tmp/
+ADD $ELASTICSEARCH_URL /tmp
 
 RUN addgroup -S elasticsearch && adduser -s /bin/bash -D -G elasticsearch elasticsearch \
     && apk update \
@@ -18,23 +17,18 @@ RUN addgroup -S elasticsearch && adduser -s /bin/bash -D -G elasticsearch elasti
     && mkdir -p /opt \
     && tar xvzf /tmp/$PKG_NAME-$ELASTICSEARCH_VERSION.tar.gz -C /opt/ \
     && ln -s /opt/$PKG_NAME-$ELASTICSEARCH_VERSION /opt/$PKG_NAME \
-    && rm -rf /tmp/*.tar.gz /var/cache/apk/*
-#
-
-WORKDIR /opt/$PKG_NAME
-
-RUN set -ex \
+    && rm -rf /tmp/*.tar.gz /var/cache/apk/* \
+    && set -ex \
 	&& for path in \
-		./data \
-		./data/elk \
-		./logs \
-		./config \
-		./config/scripts \
+		/$ES_PATH/data \
+		/$ES_PATH/data/elk \
+		/$ES_PATH/logs \
+		/$ES_PATH/config \
+		/$ES_PATH/config/scripts \
 	; do \
 		mkdir -p "$path"; \
 	done \
-    && chown -R elasticsearch:elasticsearch /opt/elasticsearch \
-    && chmod 775 -R /opt/elasticsearch
+    && chown -R elasticsearch:root /opt
 
 # Add files
 COPY config/elasticsearch.yml /opt/elasticsearch/config/elasticsearch.yml
