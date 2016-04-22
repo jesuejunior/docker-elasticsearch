@@ -10,6 +10,7 @@ ENV ES_PATH = /opt/$PKG_NAME
 # Download Elasticsearch
 
 ADD $ELASTICSEARCH_URL /tmp
+COPY scripts/run.sh /scripts/run.sh
 
 RUN addgroup -S elasticsearch && adduser -s /bin/bash -D -G elasticsearch elasticsearch \
     && apk update \
@@ -28,11 +29,11 @@ RUN addgroup -S elasticsearch && adduser -s /bin/bash -D -G elasticsearch elasti
 	; do \
 		mkdir -p "$path"; \
 	done \
-    && chown -R elasticsearch:root /opt
+    && chown -R elasticsearch:root /opt /scripts
 
 # Add files
 COPY config/elasticsearch.yml /opt/elasticsearch/config/elasticsearch.yml
-COPY scripts/run.sh /scripts/run.sh
+
 
 # Specify Volume
 VOLUME ["/opt/elasticsearch"]

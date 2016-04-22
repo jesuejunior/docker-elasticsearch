@@ -7,8 +7,6 @@ echo "-------------------------------"
 
 vol=/opt/elasticsearch
 
-ls $vol
-
 esopts=""
 if [ -f "$vol/config/elasticsearch.yml" ]; then
   esopts="-Des.path.home=$vol";
