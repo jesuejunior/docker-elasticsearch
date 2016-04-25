@@ -37,7 +37,7 @@ COPY config/elasticsearch.yml /opt/elasticsearch/config/elasticsearch.yml
 
 
 # Specify Volume
-VOLUME ["/opt/elasticsearch"]
+VOLUME ["/opt/elasticsearch/data", "/opt/elasticsearch/logs]
 
 # Exposes
 EXPOSE 9200 9300
